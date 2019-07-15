@@ -22,11 +22,11 @@ from __future__ import print_function, division, absolute_import, unicode_litera
 import tensorflow as tf
 
 def weight_variable(shape, stddev=0.1, name="weight"):
-    initial = tf.truncated_normal(shape, stddev=stddev)
+    initial = tf.random.truncated_normal(shape, stddev=stddev)
     return tf.Variable(initial, name=name)
 
 def weight_variable_devonc(shape, stddev=0.1, name="weight_devonc"):
-    return tf.Variable(tf.truncated_normal(shape, stddev=stddev), name=name)
+    return tf.Variable(tf.random.truncated_normal(shape, stddev=stddev), name=name)
 
 def bias_variable(shape, name="bias"):
     initial = tf.constant(0.1, shape=shape)
@@ -36,7 +36,8 @@ def conv2d(x, W, b, keep_prob_):
     with tf.name_scope("conv2d"):
         conv_2d = tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], padding='VALID')
         conv_2d_b = tf.nn.bias_add(conv_2d, b)
-        return tf.nn.dropout(conv_2d_b, keep_prob_)
+        rate=1-keep_prob_
+        return tf.nn.dropout(conv_2d_b, rate)
 
 def deconv2d(x, W,stride):
     with tf.name_scope("deconv2d"):
@@ -65,4 +66,4 @@ def pixel_wise_softmax(output_map):
         return exponential_map / normalize
 
 def cross_entropy(y_,output_map):
-    return -tf.reduce_mean(y_*tf.log(tf.clip_by_value(output_map,1e-10,1.0)), name="cross_entropy")
+    return -tf.reduce_mean(y_*tf.math.log(tf.clip_by_value(output_map,1e-10,1.0)), name="cross_entropy")
