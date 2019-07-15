@@ -148,20 +148,20 @@ def create_conv_net(x, keep_prob, channels, n_class, layers=3, features_root=16,
     if summaries:
         with tf.name_scope("summaries"):
             for i, (c1, c2) in enumerate(convs):
-                tf.summary.image('summary_conv_%02d_01' % i, get_image_summary(c1))
-                tf.summary.image('summary_conv_%02d_02' % i, get_image_summary(c2))
+                tf.compat.v1.summary.image('summary_conv_%02d_01' % i, get_image_summary(c1))
+                tf.compat.v1.summary.image('summary_conv_%02d_02' % i, get_image_summary(c2))
 
             for k in pools.keys():
-                tf.summary.image('summary_pool_%02d' % k, get_image_summary(pools[k]))
+                tf.compat.v1.summary.image('summary_pool_%02d' % k, get_image_summary(pools[k]))
 
             for k in deconv.keys():
-                tf.summary.image('summary_deconv_concat_%02d' % k, get_image_summary(deconv[k]))
+                tf.compat.v1.summary.image('summary_deconv_concat_%02d' % k, get_image_summary(deconv[k]))
 
             for k in dw_h_convs.keys():
-                tf.summary.histogram("dw_convolution_%02d" % k + '/activations', dw_h_convs[k])
+                tf.compat.v1.summary.histogram("dw_convolution_%02d" % k + '/activations', dw_h_convs[k])
 
             for k in up_h_convs.keys():
-                tf.summary.histogram("up_convolution_%s" % k + '/activations', up_h_convs[k])
+                tf.compat.v1.summary.histogram("up_convolution_%s" % k + '/activations', up_h_convs[k])
 
     variables = []
     for w1, w2 in weights:
@@ -186,14 +186,14 @@ class Unet(object):
     """
 
     def __init__(self, channels, n_class, cost="cross_entropy", cost_kwargs={}, **kwargs):
-        tf.reset_default_graph()
+        tf.compat.v1.reset_default_graph()
 
         self.n_class = n_class
         self.summaries = kwargs.get("summaries", True)
 
-        self.x = tf.placeholder("float", shape=[None, None, None, channels], name="x")
-        self.y = tf.placeholder("float", shape=[None, None, None, n_class], name="y")
-        self.keep_prob = tf.placeholder(tf.float32, name="dropout_probability")  # dropout (keep probability)
+        self.x = tf.compat.v1.placeholder("float", shape=[None, None, None, channels], name="x")
+        self.y = tf.compat.v1.placeholder("float", shape=[None, None, None, n_class], name="y")
+        self.keep_prob = tf.compat.v1.placeholder(tf.float32, name="dropout_probability")  # dropout (keep probability)
 
         logits, self.variables, self.offset = create_conv_net(self.x, self.keep_prob, channels, n_class, **kwargs)
 
